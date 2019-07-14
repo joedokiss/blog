@@ -32,6 +32,8 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
+        Auth::login($user);
+
         session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
 
         // 注意这里是一个『约定优于配置』的体现，此时 $user 是 User 模型对象的实例。
