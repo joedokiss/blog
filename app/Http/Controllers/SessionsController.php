@@ -22,7 +22,8 @@ class SessionsController extends Controller
 
         // Auth::attempt(['email' => $email, 'password' => $password])
         // 接收一个数组来作为第一个参数，该参数提供的值将用于寻找数据库中的用户数据
-        if (Auth::attempt($credentials))
+        // 第二个参数为是否为用户开启『记住我』功能的布尔值
+        if (Auth::attempt($credentials, $request->has('remember')))
         {
             session()->flash('success', '欢迎回来！');
             return redirect()->route('users.show', [Auth::user()]);
