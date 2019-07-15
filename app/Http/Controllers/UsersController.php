@@ -7,6 +7,13 @@ use App\Models\User;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store'] // black list
+        ]);
+    }
+
     public function create()
     {
         return view('users.create');
@@ -17,6 +24,9 @@ class UsersController extends Controller
         return view('users.show', compact('user'));
     }
 
+    /**
+     * create and save a new user
+     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -44,6 +54,7 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
