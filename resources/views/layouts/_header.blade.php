@@ -4,7 +4,7 @@
     <ul class="navbar-nav justify-content-end">
       @if(Auth::check())
         <li class="nav-item">
-          <a href="#" class="nav-link">Users list</a>
+          <a href="{{ route('users.index') }}" class="nav-link">Users list</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -12,7 +12,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{{ route('users.show', Auth::user()) }}">My profile</a>
-            <a class="dropdown-item" href="#">Edit profile</a>
+            <a class="dropdown-item" href="{{ route('users.edit', Auth::user()) }}">Edit profile</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" id="logout" href="#">
               <form action="{{ route('logout') }}" method="POST">
