@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Mail;
 
 class UsersController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store', 'index'] // black list
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail'] // black list
         ]);
     }
 
@@ -42,15 +43,18 @@ class UsersController extends Controller
         ]);
 
         //return a User object if succeed
+        // NOTE: the activation token is created in the creating hook
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
+        $this->sendEmailConfirmationTo($user);
+
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
 
         // 注意这里是一个『约定优于配置』的体现，此时 $user 是 User 模型对象的实例。
         // route() 方法会自动获取 Model 的主键，也就是数据表 users 的主键 id，以上代码等同于：
@@ -99,5 +103,33 @@ class UsersController extends Controller
         $user->delete();
         session()->flash('success', '成功删除用户！');
         return back();
+    }
+
+    public function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm'; // email template based on 'view'
+        $data = compact('user'); // NOTE: the activation token is created in the creating hook
+        $from = 'summer@example.com';
+        $name = 'Summer';
+        $to = $user->email;
+        $subject = "Thanks for registeration!Please confirm your email.";
+
+        Mail::send($view, $data, function($message) use ($from, $name, $to, $subject){
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+
+        return redirect()->route('users.show', [$user]);
     }
 }
