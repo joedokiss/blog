@@ -46,6 +46,11 @@ class User extends Authenticatable
         return "http://www.gravatar.com/avatar/$hash?s=$size";
     }
 
+    public function statuses()
+    {
+        return $this->hasMany(Status::class);
+    }
+
     // 方法会在用户模型类完成初始化之后进行加载
     public static function boot()
     {
