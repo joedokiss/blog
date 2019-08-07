@@ -51,6 +51,11 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+    public function feed()
+    {
+        return $this->statuses()->orderBy('created_at', 'desc');
+    }
+
     // 方法会在用户模型类完成初始化之后进行加载
     public static function boot()
     {

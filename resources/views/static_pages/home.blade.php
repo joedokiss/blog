@@ -10,6 +10,10 @@
         </section>
       </div>
 
+      <h4>微博列表</h4>
+      <hr>
+      @include('shared._feed')
+
       <aside class="col-md-4">
         <section class="user_info">
           @include('shared._user_info', ['user' => Auth::user()])
