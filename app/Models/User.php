@@ -65,4 +65,43 @@ class User extends Authenticatable
             $user->activation_token = str_random(30);
         });
     }
+
+    // 获取粉丝关系列表
+    // belongsToMany 方法的第三个参数 user_id 是定义在关联中的模型外键名，而第四个参数 follower_id 则是要合并的模型外键名。
+    public function followers()
+    {
+        // 当 user_id 为某个值时，合并 follower_id 之后的数据
+        return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
+    }
+
+    // 获取用户关注人列表
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+    }
+
+    public function follow($user_ids)
+    {
+        if (!is_array($user_ids))
+        {
+            $user_ids = compact('user_ids');
+        }
+
+        $this->followings()->sync($user_ids, false);
+    }
+
+    public function unfollow($user_ids)
+    {
+        if (!is_array($user_ids))
+        {
+            $user_ids = compact('user_ids');
+        }
+
+        $this->followings()->detach($user_ids);
+    }
+
+    public function isFollowing($user_id)
+    {
+        return $this->followings->contains($user_id);
+    }
 }
